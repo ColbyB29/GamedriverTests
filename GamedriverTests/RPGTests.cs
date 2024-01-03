@@ -24,7 +24,7 @@ namespace GamedriverTests
 
         Scene_Start sc_Start;
         Scene_Home sc_Home;
-        
+        Scene_Outside sc_Outside;
 
 
         [OneTimeSetUp]
@@ -63,6 +63,24 @@ namespace GamedriverTests
         }
 
         [Test, Order(1)]
+        public void VerifySceneNameStart()
+        {
+            try
+            {
+                sc_Start = new Scene_Start();
+                Assert.AreEqual(sc_Start.sn_Name, api.GetSceneName(),"Current scene name is incorrect");
+                api.CaptureScreenshot("VerifySceneNameStart.jpg", true, true);
+            }
+            catch (Exception ex)
+            {
+                api.CaptureScreenshot("VerifySceneNameStart-FAIL.jpg", true, true);
+                throw new Exception("VerifySceneNameStart test fail: " + ex.ToString());
+
+            }
+
+        }
+
+        [Test, Order(2)]
         public void StartGame()
         {
             try
@@ -70,19 +88,41 @@ namespace GamedriverTests
                 sc_Start = new Scene_Start();
                 api.WaitForObject(sc_Start.btn_NewGame);
 
-                Assert.True(sc_Start.Start_ClickNewGameButton(api), "Couldn't click on button");
+                //Triggered if ClickObject fails at clicking btn_NewGame
+                Assert.IsTrue(sc_Start.Start_ClickNewGameButton(api), "Couldn't click on button");
+
+                //Write to console if Assert passes
                 Console.WriteLine("Clicked on New Game Button!");
-                api.CaptureScreenshot("NewGame.jpg", true, true);
+                api.CaptureScreenshot("StartGame.jpg", true, true);
             }
             catch (Exception ex)
             {
-                api.CaptureScreenshot("NewGame-FAIL.jpg", true, true);
-                throw new Exception("NewGame test fail: " + ex.ToString());
+                api.CaptureScreenshot("StartGame-FAIL.jpg", true, true);
+                throw new Exception("StartGame test fail: " + ex.ToString());
+
             }
 
         }
 
-        [Test, Order(2)]
+        [Test, Order(3)]
+        public void VerifySceneNameHome()
+        {
+            try
+            {
+                sc_Home = new Scene_Home();
+                Assert.AreEqual(sc_Home.sn_Name, api.GetSceneName(), "Current scene name is incorrect");
+                api.CaptureScreenshot("VerifySceneNameHome.jpg", true, true);
+            }
+            catch (Exception ex)
+            {
+                api.CaptureScreenshot("VerifySceneNameHome-FAIL.jpg", true, true);
+                throw new Exception("VerifySceneNameHome test fail: " + ex.ToString());
+
+            }
+
+        }
+
+        [Test, Order(4)]
         public void NPCInteractionPositive()
         {
             try
@@ -103,7 +143,29 @@ namespace GamedriverTests
             }
         }
 
-        [Test, Order(3)]
+        [Test, Order(5)]
+        public void TestDialogue()
+        {
+            try
+            {
+                sc_Home = new Scene_Home();
+
+                Assert.True(sc_Home.Home_LoadScene(api), "Couldn't load Home");
+
+                api.WaitForObject(sc_Home.pl_MainCharacter);
+
+                Assert.IsTrue(sc_Home.Home_TestDialogue(api), "Could not click continue twice during the dialogue test");
+
+                api.CaptureScreenshot("TestDialogue.jpg", true, true);
+            }
+            catch (Exception ex)
+            {
+                api.CaptureScreenshot("TestDialogue-FAIL.jpg", true, true);
+                throw new Exception("TestDialogue test fail: " + ex.ToString());
+            }
+        }
+
+        [Test, Order(6)]
         public void NPCInteractionNegative()
         {
             try
@@ -121,6 +183,81 @@ namespace GamedriverTests
             {
                 api.CaptureScreenshot("NPCInteractionNegative-FAIL.jpg", true, true);
                 throw new Exception("NPCInteractionNegative test fail: " + ex.ToString());
+            }
+        }
+
+       
+
+        [Test, Order(7)]
+        public void MoveOutside()
+        {
+            try
+            {
+                sc_Home = new Scene_Home();
+
+                Assert.True(sc_Home.Home_LoadScene(api), "Couldn't load Home");
+
+                api.WaitForObject(sc_Home.pl_MainCharacter);
+                Assert.IsTrue(sc_Home.Home_MoveToDoor(api),"Cannot move player to the door");
+                Console.WriteLine("Moving player to door");
+                api.CaptureScreenshot("MoveOutside.jpg", true, true);
+            }
+            catch (Exception ex)
+            {
+                api.CaptureScreenshot("MoveOutside-FAIL.jpg", true, true);
+                throw new Exception("MoveOutside test fail: " + ex.ToString());
+            }
+        }
+
+        [Test, Order(8)]
+        public void VerifySceneNameOutside()
+        {
+            try
+            {
+                sc_Outside = new Scene_Outside();
+                Assert.IsTrue(sc_Outside.Outside_VerifyCurrentSceneName(sc_Outside.sn_Name, api.GetSceneName()), "Current scene name is incorrect");
+                api.CaptureScreenshot("VerifySceneNameOutside.jpg", true, true);
+            }
+            catch (Exception ex)
+            {
+                api.CaptureScreenshot("VerifySceneNameOutside-FAIL.jpg", true, true);
+                throw new Exception("VerifySceneNameOutside test fail: " + ex.ToString());
+            }
+        }
+
+        [Test, Order(9)]
+        public void PlantAcorn()
+        {
+            try
+            {
+                sc_Outside = new Scene_Outside();
+                Assert.IsTrue(sc_Outside.Outside_VerifyCurrentSceneName(sc_Outside.sn_Name, api.GetSceneName()), "Current scene name is incorrect");
+                Assert.IsTrue(sc_Outside.Outside_PlantAcorn(api), "Cannot plant acorn");
+                Console.WriteLine("planting acorn");
+                api.CaptureScreenshot("PlantAcorn.jpg", true, true);
+            }
+            catch (Exception ex)
+            {
+                api.CaptureScreenshot("PlantAcorn-FAIL.jpg", true, true);
+                throw new Exception("PlantAcorn test fail: " + ex.ToString());
+            }
+        }
+
+        [Test, Order(10)]
+        public void TestDying()
+        {
+            try
+            {
+                sc_Outside = new Scene_Outside();
+                Assert.IsTrue(sc_Outside.Outside_VerifyCurrentSceneName(sc_Outside.sn_Name, api.GetSceneName()), "Current scene name is incorrect");
+                Assert.IsTrue(sc_Outside.Outside_TestDying(api), "Play did not die as expected");
+                Console.WriteLine("player is dead");
+                api.CaptureScreenshot("TestDying.jpg", true, true);
+            }
+            catch (Exception ex)
+            {
+                api.CaptureScreenshot("TestDying-FAIL.jpg", true, true);
+                throw new Exception("TestDying test fail: " + ex.ToString());
             }
         }
 

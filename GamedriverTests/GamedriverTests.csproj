@@ -67,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Scenes\Scene_Home.cs" />
+    <Compile Include="Scenes\Scene_Outside.cs" />
     <Compile Include="Scenes\Scene_Start.cs" />
     <Compile Include="RPGTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
